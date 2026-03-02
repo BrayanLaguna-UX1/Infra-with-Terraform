@@ -28,7 +28,10 @@ resource "aws_route_table" "PrivRT" {
 }
 
 resource "aws_route_table_association" "pubAssRT" {
-    subnet_id = aws_subnet.subnetpub.id
+    for_each = {
+        pub1 = aws_subnet.subnetpub.id
+        pub2 = aws_subnet.subnetpub2.id}
+    subnet_id = each.value
     route_table_id = aws_route_table.PubRT.id
   
 }

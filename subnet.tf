@@ -12,7 +12,7 @@ resource "aws_subnet" "subnetpriv2" {
     cidr_block = "10.10.3.0/24"
     availability_zone = "us-east-1c"
     tags = {
-        Name = "2"
+        Name = "Privsub2"
     }
 }
 

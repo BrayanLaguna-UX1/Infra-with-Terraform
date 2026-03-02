@@ -20,6 +20,8 @@ resource "aws_subnet" "subnetpub" {
     vpc_id = aws_vpc.myvpc.id
     cidr_block = "10.10.2.0/24"
     availability_zone = "us-east-1b"
+    
+    
     tags = {
         Name = "publicsub1"
     }

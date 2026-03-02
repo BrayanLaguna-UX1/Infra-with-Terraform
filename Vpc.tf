@@ -15,21 +15,15 @@ resource "aws_internet_gateway" "myitg" {
 }
 
 resource "aws_nat_gateway" "mynat" {
-    vpc_id = aws_vpc.myvpc.id
+    subnet_id = aws_subnet.subnetpub.id
+    allocation_id = aws_eip.eipfornat.id
     tags = {
       Name = "natgate1"
     }
   
 }
 
-resource "aws_nat_gateway_eip_association" "eipassoc" {
-  nat_gateway_id = aws_nat_gateway.mynat.id
-  allocation_id = aws_eip.eipfornat.id
-
-  depends_on = [ aws_internet_gateway.myitg ]
-}
 
 resource "aws_eip" "eipfornat" {
-    domain = "vpc"
-  
+    domain = "vpc"  
 }

@@ -27,6 +27,15 @@ resource "aws_alb_target_group" "targetgp" {
         minimum_healthy_targets_percentage = "off"
       }
     }
+    health_check {
+      path = "/"
+      protocol = "HTTP"
+      interval = 30
+      timeout = 5
+      matcher = "200"
+      healthy_threshold = 2
+      unhealthy_threshold = 2
+    }
   
 }
 
@@ -38,3 +47,16 @@ resource "aws_alb_target_group_attachment" "mytarget_GP" {
     target_id = each.value
     port = 80 
 }
+
+resource "aws_alb_listener" "listener1" {
+  load_balancer_arn = aws_alb.my_alb.arn
+  port = 80
+  protocol = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.targetgp.arn
+    type = "forward"
+  }
+  
+}
+

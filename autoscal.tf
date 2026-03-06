@@ -16,15 +16,16 @@ resource "aws_autoscaling_group" "MyautoSG" {
     name = "WebAutoScaling"
     min_size = 2
     max_size = 4
-    desired_capacity = 2
 
     vpc_zone_identifier = [ 
         aws_subnet.subnetpriv.id,
         aws_subnet.subnetpriv2.id
      ]
 
-     target_group_arns = [ aws_alb_target_group.targetgp.id ]
-
+     target_group_arns = [ aws_alb_target_group.targetgp.arn ]
+    health_check_type = "ELB"
+    health_check_grace_period = 300
+  
      mixed_instances_policy {
        launch_template {
          launch_template_specification {
@@ -39,5 +40,11 @@ resource "aws_autoscaling_group" "MyautoSG" {
          spot_allocation_strategy = "capacity-optimized"
        }
      }
+    
+}
+
+resource "aws_autoscaling_attachment" "autoscalingattach" {
+    autoscaling_group_name = aws_autoscaling_group.MyautoSG.id
+    lb_target_group_arn = aws_alb_target_group.targetgp.id
   
 }

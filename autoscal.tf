@@ -5,10 +5,27 @@ resource "aws_launch_template" "mytemplate" {
     image_id = data.aws_ami.amazon_id.id
     
     name_prefix = "Webservers"
-    metadata_options {
-      
-    }
+    user_data = base64encode(<<EOF
+  #!/bin/bash
+  yum update -y
+  yum install nginx -y
+
+  systemctl start nginx
+  systemctl enable nginx
+  SERVER=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+  AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+  echo "This is server $SERVER, in AZ $AZ " > /usr/share/nginx/html/index.html
   
+  EOF
+  )
+}
+
+resource "aws_autoscaling_policy" "autoscpoli" {
+  name = "WebAutoScaling"
+  scaling_adjustment = 2
+  adjustment_type = "ChangeInCapacity"
+  cooldown = 200
+  autoscaling_group_name = aws_autoscaling_group.MyautoSG.id
 }
 
 

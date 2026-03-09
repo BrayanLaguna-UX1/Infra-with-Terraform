@@ -4,12 +4,17 @@ resource "aws_launch_template" "mytemplate" {
     vpc_security_group_ids = [ aws_security_group.Ec2websg.id ]
     image_id = data.aws_ami.amazon_id.id
     
+    iam_instance_profile {
+      name = aws_iam_instance_profile.profinstance.name
+    }
     name_prefix = "Webservers"
     user_data = base64encode(<<EOF
   #!/bin/bash
   yum update -y
   yum install nginx -y
-
+  yum install amazon-cloudwatch-agent -y
+  systemctl start amazon-cloudwatch-agent -y
+  systemctl enable amazon-cloudwatch-agent -y
   systemctl start nginx
   systemctl enable nginx
   SERVER=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
